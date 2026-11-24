@@ -171,3 +171,42 @@ input[type="checkbox"] { width: auto; accent-color: var(--g); }
 
 .rank-me { background: var(--g2); font-weight: 600; }
 .table-wrap { overflow-x: auto; }
+.prof-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.av-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.av {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--g);
+  background: var(--g2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--ink);
+  flex: 0 0 auto;
+}
+
+.av.sm {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.user-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
