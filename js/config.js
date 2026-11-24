@@ -3,6 +3,7 @@ export const SUPABASE_ANON_KEY = "sb_publishable_iIRQFLPKftWcXsJ_8ba5Qw_ToQELnmI
 
 export const TABLE_ESTADO = "cronograma_estado";
 export const TABLE_RANKING = "ranking_amigos";
+export const AVATAR_BUCKET = "avatars";
 
 export const EXAM = new Date(2027, 0, 24);
 
