@@ -1,394 +1,78 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#6cbf4a">
-<title>Cronograma Banestes 2026</title>
-<style>
-:root{--bg:#f4fbee;--card:#fff;--ink:#23401f;--mut:#6b8566;--line:#dcebd2;--g:#6cbf4a;--g2:#e5f5d8;--o:#ff9a3c;--o2:#fff0df;--bad:#ef6a3a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17220f;--card:#22331a;--ink:#e8f5df;--mut:#a3bd99;--line:#34492a;--g2:#2b4a1d;--o2:#4a3217}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Roboto,sans-serif}
-.w{max-width:1100px;margin:0 auto;padding:16px}
-h1{margin:0;font-size:24px}h2{font-size:18px;margin:18px 0 8px}
-.hd{background:linear-gradient(120deg,var(--g),var(--o));color:#fff;border-radius:18px;padding:18px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
-.hd small{opacity:.95}.cd{font-size:34px;font-weight:800;line-height:1}
-.hd input{border:0;border-radius:8px;padding:6px 8px;font:inherit;color:#1d3318;background:#fff}
-.syncbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:13px}
-.syncbar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#999;margin-right:5px}
-.dot.ok{background:#2e8b1f}.dot.sync{background:#ff9a3c}.dot.err{background:#ef6a3a}
-.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
-.tabs button,.btn{border:2px solid var(--g);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer}
-.btn.sm{padding:5px 12px;font-size:13px}
-.tabs button.on,.btn.p{background:var(--g);color:#fff}.btn.o{background:var(--o);border-color:var(--o);color:#fff}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.kp .card b{display:block;font-size:24px}.kp span{color:var(--mut);font-size:13px}
-.leg{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.leg i{font-style:normal;font-size:12px;padding:3px 9px;border-radius:999px;color:#1d3318}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.day{border-radius:12px;overflow:hidden;border:2px solid transparent;background:var(--card);cursor:pointer;text-align:left;padding:0;font:inherit;color:var(--ink)}
-.day .t{padding:6px 10px;font-weight:700;color:#1d3318;display:flex;justify-content:space-between;font-size:13px}
-.day .b{padding:8px 10px;font-size:13px;min-height:62px}.day .b em{display:block;font-style:normal;color:var(--mut);font-size:12px;margin-top:4px}
-.day.done{opacity:.6}.day.done .t::after{content:"✓"}.day.now{border-color:var(--o);box-shadow:0 0 0 3px var(--o2)}
-table{width:100%;border-collapse:collapse}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{color:var(--mut);font-weight:600}
-.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden;min-width:70px}.bar>div{height:100%}
-.ov{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:14px;z-index:9}.ov.on{display:flex}
-.md{background:var(--card);border-radius:16px;max-width:460px;width:100%;padding:18px;max-height:90vh;overflow:auto}
-label{display:block;font-size:13px;color:var(--mut);margin-top:8px}
-input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--card);color:var(--ink)}
-.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:110px}
-.sim{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
-.good{color:#2e8b1f}.mid{color:#d9730d}.low{color:var(--bad)}.hide{display:none}
-.authbox{max-width:420px;margin:24px auto}
-.msg{font-size:13px;margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--g2)}
-.msg.err{background:#fde6de;color:#9f2d14}
-</style></head><body><div class="w">
-<div class="hd"><div><h1>🍊 Cronograma Banestes 2026</h1><small>Técnico Bancário, prova em 24/01/2027 (FCC)</small></div>
-<div><div class="cd" id="cd">--</div><small>dias para a prova</small></div>
-<div><small>Início do plano</small><br><input type="date" id="st"></div></div>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6cbf4a">
+  <title>Cronograma Banestes 2026</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="w">
+    <header class="hd">
+      <div>
+        <h1>🍊 Cronograma Banestes 2026</h1>
+        <small>Técnico Bancário, prova em 24/01/2027 (FCC)</small>
+      </div>
+      <div>
+        <div class="cd" id="cd">--</div>
+        <small>dias para a prova</small>
+      </div>
+      <div>
+        <small>Início do plano</small><br>
+        <input type="date" id="st">
+      </div>
+    </header>
 
-<!-- TELA DE LOGIN / CADASTRO -->
-<div id="authView" class="authbox card hide">
-  <h2 style="margin-top:0">🔐 Acesso privado ao cronograma</h2>
-  <p style="font-size:13px;color:var(--mut);margin-top:0">Entre com sua conta para sincronizar seus dados com segurança.</p>
-  <label for="aemail">E-mail</label>
-  <input type="email" id="aemail" placeholder="seu@email.com" autocomplete="email">
-  <label for="apass">Senha</label>
-  <input type="password" id="apass" placeholder="Mínimo 6 caracteres" autocomplete="current-password">
-  <div class="row" style="margin-top:14px">
-    <button class="btn p" id="btnLogin">Entrar</button>
-    <button class="btn" id="btnSignup">Criar conta</button>
-  </div>
-  <div id="amsg" class="msg hide"></div>
-</div>
+    <!-- TELA DE LOGIN / CADASTRO -->
+    <section id="authView" class="authbox card hide">
+      <h2 style="margin-top:0">🔐 Acesso ao cronograma</h2>
+      <p class="mut">Entre com sua conta para sincronizar seus estudos e participar do ranking.</p>
+      <label for="aemail">E-mail</label>
+      <input type="email" id="aemail" placeholder="seu@email.com" autocomplete="email">
+      <label for="apass">Senha</label>
+      <input type="password" id="apass" placeholder="Mínimo 6 caracteres" autocomplete="current-password">
+      <div class="row" style="margin-top:14px">
+        <button class="btn p" id="btnLogin">Entrar</button>
+        <button class="btn" id="btnSignup">Criar conta</button>
+      </div>
+      <div id="amsg" class="msg hide"></div>
+    </section>
 
-<!-- APP PRINCIPAL -->
-<div id="appView" class="hide">
-  <div class="syncbar">
-    <div class="grp"><span class="dot" id="sdot"></span><span id="stxt">Conectando...</span></div>
-    <div class="grp">
-      <span id="uemail" style="color:var(--mut)"></span>
-      <button class="btn sm" id="spull">Sincronizar</button>
-      <button class="btn sm" id="btnLogout">Sair</button>
-    </div>
+    <!-- APP PRINCIPAL -->
+    <main id="appView" class="hide">
+      <div class="syncbar">
+        <div class="grp">
+          <span class="dot" id="sdot"></span>
+          <span id="stxt">Conectando...</span>
+        </div>
+        <div class="grp">
+          <span id="uemail" class="mut"></span>
+          <button class="btn sm" id="spull">Sincronizar</button>
+          <button class="btn sm" id="btnLogout">Sair</button>
+        </div>
+      </div>
+
+      <nav class="tabs" id="navTabs">
+        <button data-t="a" class="on">📅 Cronograma</button>
+        <button data-t="b">📊 Desempenho</button>
+        <button data-t="d">🎯 Simulador</button>
+        <button data-t="e">🧠 Erros &amp; Revisões</button>
+        <button data-t="c">📝 Registro</button>
+        <button data-t="f">🏆 Ranking</button>
+      </nav>
+
+      <section id="a"></section>
+      <section id="b" class="hide"></section>
+      <section id="d" class="hide"></section>
+      <section id="e" class="hide"></section>
+      <section id="c" class="hide"></section>
+      <section id="f" class="hide"></section>
+    </main>
   </div>
 
-  <div class="tabs"><button data-t="a" class="on">📅 Cronograma</button><button data-t="b">📊 Desempenho</button><button data-t="c">📝 Registro</button></div>
-  <div id="a"></div><div id="b" class="hide"></div><div id="c" class="hide"></div>
-</div>
-</div>
-<div class="ov" id="ov"><div class="md" id="md"></div></div>
+  <div class="ov" id="ov"><div class="md" id="md"></div></div>
 
-<script>
-// === CONFIGURAÇÃO DO SUPABASE ===
-const SUPABASE_URL = "https://bitkrlqmenyjhsjqjktr.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_iIRQFLPKftWcXsJ_8ba5Qw_ToQELnmI";
-const TABLE = "cronograma_estado";
-
-const EXAM=new Date(2027,0,24);
-const D={LP:{n:"Português",c:"#ffb15c",q:10,g:1},MT:{n:"RLM/Matemática",c:"#a8d86e",q:10,g:1},AT:{n:"Atualidades do mercado",c:"#ffd08a",q:5,g:1},ET:{n:"Ética, Compliance e ESG",c:"#7fcf8f",q:5,g:1},
-CB:{n:"Conhecimentos Bancários",c:"#ff9a3c",q:15,g:0},MF:{n:"Matemática Financeira",c:"#c2e58a",q:5,g:0},PE:{n:"Probabilidade e Estatística",c:"#6fd0b0",q:5,g:0},IN:{n:"Informática",c:"#9be0a4",q:5,g:0},VN:{n:"Vendas, Negociação e Atendimento",c:"#ff8f6b",q:10,g:0}};
-const T={
-CB:["SFN: CMN, BC, CVM, Susep, Previc e FGC","Política monetária: Selic, Copom, compulsório, open market","Instituições: bancos, cooperativas, SCD/SEP e instituições de pagamento","Contas, tarifas (Res. 3.919) e serviços essenciais; poupança e conta-salário","Meios de pagamento: Pix, TED, cartões, cheque, boleto e SPB","Crédito: consignado, rotativo, CCB, garantias, desconto de títulos, portabilidade, SCR","Renda fixa: CDB, LCI/LCA, Tesouro, FGC e tributação; risco e retorno","Mercado de capitais: ações, debêntures, fundos, B3, IPO, câmbio","Seguros, previdência (PGBL/VGBL), capitalização, consórcio e bancassurance","PLD/FT (COAF, KYC, PEP), Res. 4.966 e gestão de riscos","Proteção do consumidor: CDC, SAC, Ouvidoria, atendimento prioritário e Open Finance"],
-LP:["Interpretação de textos e inferência","Ortografia, acentuação e crase","Pontuação e coordenação/subordinação","Concordância verbal e nominal","Regência e colocação pronominal","Vozes, discurso direto/indireto/livre; tempos e modos","Formação de palavras, figuras de linguagem, denotação e conotação"],
-VN:["Atendimento: qualidade, SERVQUAL e momentos da verdade","Comunicação, escuta ativa e assertividade","Etapas da venda, SPIN e objeções","Negociação: Harvard, MAANA, estilos e mediação","CRM, fidelização, NPS, CSAT, jornada e omnicanalidade","Ética na oferta: suitability, venda casada, CDC e Guia de Conduta"],
-MT:["Lógica proposicional: negação, equivalências, argumentos","Relações arbitrárias, silogismos e dedução","Porcentagem, razão, proporção e regra de três","Divisão proporcional, frações e problemas","Contagem: princípio multiplicativo, permutações e combinações","Sequências, orientação espacial e temporal; conjuntos"],
-ET:["Guia de Conduta Ética: princípios, presentes e conflito de interesse","Guia: sigilo, nepotismo, assédio, relacionamento com clientes e fornecedores","Compliance, controles internos, três linhas e integridade","Prevenção à corrupção e à lavagem; governança e Lei das Estatais","ESG, ODS e finanças sustentáveis"],
-MF:["Juros simples e desconto simples","Juros compostos e taxas (nominal, efetiva, equivalente, real)","Séries de pagamentos e valor presente","Sistemas de amortização: SAC, Price e Americano"],
-PE:["Medidas centrais e de dispersão","Probabilidade: união, condicional e independência","Distribuição normal, amostragem e gráficos"],
-IN:["LGPD: conceitos, direitos, bases legais e sanções","Segurança: phishing, golpes, malware, MFA e criptografia","Google Workspace, Windows/Linux básico, redes, nuvem e IA"],
-AT:["Selic, inflação, juros reais e reforma tributária","Pix, Open Finance, ativos virtuais e fintechs","Educação financeira, Cadastro Positivo, ESG e risco climático"]};
-
-function plan(){const rem={},tot={};let k=Object.keys(T);k.forEach(x=>{rem[x]=tot[x]=T[x].length});const out=[];let prev="";
-for(let i=0;i<48;i++){let best=null,bs=-1;k.forEach(x=>{if(rem[x]>0&&x!==prev){const s=rem[x]/tot[x]+(tot[x]>5?.02:0);if(s>bs){bs=s;best=x}}});
-if(!best)k.forEach(x=>{if(rem[x]>0)best=x});const idx=tot[best]-rem[best];rem[best]--;prev=best;out.push({d:best,t:T[best][idx]})}
-for(let s=1;s<=4;s++){out.push({s:s,t:"Simulado "+s+": resolver em 4h, sem consulta"});out.push({s:s,t:"Simulado "+s+": corrigir, ler os comentários e anotar os erros"})}
-out.push({r:1,t:"Revisão dos pontos mais fracos (veja o ranking em Desempenho)"},{r:1,t:"Revisão: refazer questões erradas e resumos"},{r:1,t:"Revisão: Guia de Conduta, fórmulas e legislação"},{r:2,t:"Véspera: revisão leve, descanso e documentos da prova"});return out}
-
-const P=plan();
-let S={start:"",done:{},log:[]};
-let AUTH=null; // { access_token, refresh_token, expires_at, user: { id, email } }
-
-const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0");
-const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
-const addD=(s,n)=>{const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return d};
-const fmt=d=>pad(d.getDate())+"/"+pad(d.getMonth()+1);
-const pct=(a,q)=>q?Math.round(100*a/q):0;
-const cls=p=>p>=75?"good":p>=60?"mid":"low";
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-
-function setStatus(state,msg){
-  const dot=$("#sdot"),txt=$("#stxt");
-  if(!dot||!txt)return;
-  dot.className="dot "+(state||"");
-  txt.textContent=msg;
-}
-
-function showAuthMsg(text,isErr){
-  const el=$("#amsg");
-  el.textContent=text;
-  el.className="msg"+(isErr?" err":"");
-  el.classList.remove("hide");
-}
-
-function saveSession(data){
-  if(!data||!data.access_token)return;
-  AUTH={
-    access_token:data.access_token,
-    refresh_token:data.refresh_token,
-    expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)-60,
-    user:data.user||(AUTH&&AUTH.user)||null
-  };
-  localStorage.setItem("cb26_auth",JSON.stringify(AUTH));
-}
-
-function clearSession(){
-  AUTH=null;
-  localStorage.removeItem("cb26_auth");
-}
-
-async function ensureToken(){
-  if(!AUTH)return null;
-  const now=Math.floor(Date.now()/1000);
-  if(AUTH.expires_at && now < AUTH.expires_at)return AUTH.access_token;
-  if(!AUTH.refresh_token){clearSession();return null}
-  try{
-    const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{
-      method:"POST",
-      headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
-      body:JSON.stringify({refresh_token:AUTH.refresh_token})
-    });
-    if(!res.ok){clearSession();return null}
-    const data=await res.json();
-    saveSession(data);
-    return AUTH.access_token;
-  }catch(e){
-    return AUTH.access_token; // tenta com o atual se estiver offline
-  }
-}
-
-async function authLogin(email,password){
-  const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{
-    method:"POST",
-    headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
-    body:JSON.stringify({email,password})
-  });
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error_description||data.msg||"Falha ao entrar");
-  saveSession(data);
-}
-
-async function authSignup(email,password){
-  const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{
-    method:"POST",
-    headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
-    body:JSON.stringify({email,password})
-  });
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error_description||data.msg||"Falha ao criar conta");
-  if(data.access_token){
-    saveSession(data);
-    return {logged:true};
-  }
-  return {logged:false};
-}
-
-function showView(logged){
-  $("#authView").classList.toggle("hide",logged);
-  $("#appView").classList.toggle("hide",!logged);
-  if(logged && AUTH && AUTH.user){
-    $("#uemail").textContent=AUTH.user.email||"";
-  }
-}
-
-function cacheKey(){
-  return "cb26_"+(AUTH&&AUTH.user?AUTH.user.id:"local");
-}
-
-function loadLocal(){
-  try{
-    const l=localStorage.getItem(cacheKey())||localStorage.getItem("cb26");
-    if(l)S=Object.assign({start:"",done:{},log:[]},JSON.parse(l));
-  }catch(e){}
-}
-
-async function pullCloud(){
-  const token=await ensureToken();
-  if(!token||!AUTH||!AUTH.user){showView(false);return}
-  setStatus("sync","Sincronizando...");
-  try{
-    const url=`${SUPABASE_URL}/rest/v1/${TABLE}?user_id=eq.${encodeURIComponent(AUTH.user.id)}&select=estado,atualizado_em`;
-    const res=await fetch(url,{
-      headers:{
-        "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+token
-      }
-    });
-    if(res.status===401){clearSession();showView(false);return}
-    if(!res.ok)throw new Error("HTTP "+res.status);
-    const rows=await res.json();
-    if(Array.isArray(rows)&&rows.length&&rows[0].estado){
-      S=Object.assign({start:"",done:{},log:[]},rows[0].estado);
-      localStorage.setItem(cacheKey(),JSON.stringify(S));
-      render();
-    }else if(Object.keys(S.done).length||S.log.length||S.start){
-      // Se já tinha dados locais antes do primeiro login, sobe para a nuvem
-      await pushCloud();
-    }
-    setStatus("ok","Sincronizado na nuvem");
-  }catch(e){
-    setStatus("err","Offline — usando cache local");
-  }
-}
-
-async function pushCloud(){
-  const token=await ensureToken();
-  if(!token||!AUTH||!AUTH.user)return;
-  setStatus("sync","Salvando...");
-  try{
-    const url=`${SUPABASE_URL}/rest/v1/${TABLE}?on_conflict=user_id`;
-    const res=await fetch(url,{
-      method:"POST",
-      headers:{
-        "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+token,
-        "Content-Type":"application/json",
-        "Prefer":"resolution=merge-duplicates,return=minimal"
-      },
-      body:JSON.stringify({
-        user_id:AUTH.user.id,
-        estado:S,
-        atualizado_em:new Date().toISOString()
-      })
-    });
-    if(!res.ok)throw new Error("HTTP "+res.status);
-    setStatus("ok","Salvo na nuvem");
-  }catch(e){
-    setStatus("err","Erro ao salvar na nuvem (salvo local)");
-  }
-}
-
-let tm;
-function save(){
-  try{localStorage.setItem(cacheKey(),JSON.stringify(S))}catch(e){}
-  clearTimeout(tm);
-  tm=setTimeout(pushCloud,500);
-}
-
-function stats(){const R={};Object.keys(D).forEach(k=>R[k]={q:0,a:0});S.log.forEach(e=>{if(R[e.d]){R[e.d].q+=e.q;R[e.d].a+=e.a}});return R}
-function render(){
-  const st=S.start||iso(new Date());
-  $("#st").value=st;
-  const left=Math.ceil((EXAM-new Date(new Date().toDateString()))/864e5);
-  $("#cd").textContent=left;
-  renderA(st);renderB();renderC();
-}
-function renderA(st){const today=iso(new Date());const done=Object.keys(S.done).length;let h=`<div class="kp"><div class="card"><b>${done}/60</b><span>dias concluídos</span></div><div class="card"><b>${pct(done,60)}%</b><span>do plano</span></div><div class="card"><b>${streak()}</b><span>dias seguidos</span></div></div><div class="leg">`;
-Object.keys(D).forEach(k=>h+=`<i style="background:${D[k].c}">${esc(D[k].n)}</i>`);h+=`<i style="background:#e5f5d8">Simulados e revisão</i></div><div class="grid">`;
-P.forEach((p,i)=>{const dt=addD(st,i),c=p.d?D[p.d].c:p.s?"#ffe0b8":"#d8f0c4",nm=p.d?D[p.d].n:p.s?"Simulado "+p.s:p.r==2?"Véspera":"Revisão";
-h+=`<button class="day${S.done[i+1]?" done":""}${iso(dt)==today?" now":""}" data-i="${i}"><div class="t" style="background:${c}"><span>Dia ${pad(i+1)}</span><span>${fmt(dt)}</span></div><div class="b"><b>${esc(nm)}</b><em>${esc(p.t)}</em></div></button>`});
-$("#a").innerHTML=h+"</div>";document.querySelectorAll(".day").forEach(b=>b.onclick=()=>openDay(+b.dataset.i))}
-function streak(){let n=0;for(let i=60;i>=1;i--){if(S.done[i])n++;else if(n)break}return n}
-function openDay(i){const p=P[i],e=S.log.find(x=>x.src=="dia"+(i+1))||{};
-let h=`<h2 style="margin-top:0">Dia ${i+1}: ${esc(p.d?D[p.d].n:p.s?"Simulado "+p.s:"Revisão")}</h2><p>${esc(p.t)}</p>`;
-if(p.d)h+=`<p>Roteiro sugerido: estudar o tópico (1h30), resolver 20 questões e revisar cada erro.</p><div class="row"><div><label>Questões feitas</label><input type="number" min="0" id="dq" value="${e.q||""}"></div><div><label>Acertos</label><input type="number" min="0" id="da" value="${e.a||""}"></div></div>`;
-else if(p.s)h+=`<p>Lance as notas por disciplina na aba Registro, em “Lançar simulado”.</p>`;
-h+=`<div class="row" style="margin-top:14px"><button class="btn ${S.done[i+1]?"":"p"}" id="dd">${S.done[i+1]?"Desmarcar dia":"Concluir dia ✓"}</button><button class="btn" id="dc">Fechar</button></div>`;
-$("#md").innerHTML=h;$("#ov").classList.add("on");$("#dc").onclick=()=>$("#ov").classList.remove("on");
-$("#dd").onclick=()=>{if(p.d){const q=+$("#dq").value||0,a=Math.min(+$("#da").value||0,q);S.log=S.log.filter(x=>x.src!="dia"+(i+1));if(q)S.log.push({id:Date.now(),date:iso(addD(S.start||iso(new Date()),i)),d:p.d,q,a,src:"dia"+(i+1)})}
-if(S.done[i+1])delete S.done[i+1];else S.done[i+1]=1;save();$("#ov").classList.remove("on");render()}}
-function est(R){let avgQ=0,avgA=0;Object.keys(R).forEach(k=>{avgQ+=R[k].q;avgA+=R[k].a});const av=avgQ?avgA/avgQ:0;let hg=0,he=0,n=0;
-Object.keys(D).forEach(k=>{const r=R[k].q?R[k].a/R[k].q:av;if(R[k].q)n++;const h=r*D[k].q;D[k].g?hg+=h:he+=h});
-return{f:((hg/30*10)+2*(he/40*10))/3,hg,he,n}}
-function renderB(){const R=stats(),E=est(R),tq=Object.values(R).reduce((s,x)=>s+x.q,0),ta=Object.values(R).reduce((s,x)=>s+x.a,0);
-const rows=Object.keys(D).map(k=>{const r=R[k],p=pct(r.a,r.q),w=D[k].g?1/9:1/6,gain=r.q?D[k].q*(1-r.a/r.q)*w:null;return{k,r,p,gain}});
-const order=rows.filter(x=>x.gain!==null).sort((a,b)=>b.gain-a.gain);
-let h=`<div class="kp"><div class="card"><b>${tq}</b><span>questões registradas</span></div><div class="card"><b class="${cls(pct(ta,tq))}">${pct(ta,tq)}%</b><span>acerto geral</span></div><div class="card"><b class="${E.f>=6?"good":"low"}">${tq?E.f.toFixed(2).replace(".",","):"--"}</b><span>nota final estimada (mínimo 6,00)</span></div><div class="card"><b>${E.n}/9</b><span>disciplinas com dados</span></div></div>
-<p style="color:var(--mut);font-size:13px">A nota estimada usa o critério do edital: média ponderada (Gerais peso 1, Específicos peso 2), projetando a sua taxa de acerto em cada disciplina sobre o número de questões da prova. Disciplinas sem dados usam o seu acerto médio.</p>
-<h2>Por disciplina</h2><div class="card"><table><tr><th>Disciplina</th><th>Prova</th><th>Feitas</th><th>Acertos</th><th>%</th><th></th></tr>`;
-rows.forEach(x=>h+=`<tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${D[x.k].c}"></i> ${esc(D[x.k].n)}</td><td>${D[x.k].q}q</td><td>${x.r.q}</td><td>${x.r.a}</td><td class="${cls(x.p)}"><b>${x.r.q?x.p+"%":"--"}</b></td><td><div class="bar"><div style="width:${x.p}%;background:${x.p>=75?"#6cbf4a":x.p>=60?"#ff9a3c":"#ef6a3a"}"></div></div></td></tr>`);
-h+=`</table></div><h2>Prioridade de revisão</h2><div class="card">`;
-h+=order.length?"<p style=\"margin-top:0\">Onde cada acerto a mais vale mais nota (peso na prova x erros):</p><ol>"+order.slice(0,5).map(x=>`<li><b>${esc(D[x.k].n)}</b>: ${x.p}% de acerto, potencial de +${x.gain.toFixed(2).replace(".",",")} pontos</li>`).join("")+"</ol>":"Registre questões para ver o ranking.";
-$("#b").innerHTML=h+"</div>"}
-function renderC(){let h=`<div class="card"><h2 style="margin-top:0">Registrar questões</h2><div class="row"><div><label>Data</label><input type="date" id="rd" value="${iso(new Date())}"></div><div><label>Disciplina</label><select id="rs">${Object.keys(D).map(k=>`<option value="${k}">${esc(D[k].n)}</option>`).join("")}</select></div><div><label>Feitas</label><input type="number" min="0" id="rq"></div><div><label>Acertos</label><input type="number" min="0" id="ra"></div></div><p><button class="btn p" id="rb">Adicionar</button></p></div>
-<div class="card" style="margin-top:12px"><h2 style="margin-top:0">Lançar simulado</h2><label>Qual simulado</label><select id="sn"><option>1</option><option>2</option><option>3</option><option>4</option></select><div class="sim">${Object.keys(D).map(k=>`<div><label>${esc(D[k].n)} (de ${D[k].q})</label><input type="number" min="0" max="${D[k].q}" data-k="${k}" class="sa"></div>`).join("")}</div><p><button class="btn o" id="sb">Lançar simulado</button></p></div>
-<h2>Histórico</h2><div class="card"><table><tr><th>Data</th><th>Disciplina</th><th>Origem</th><th>Acertos</th><th></th></tr>`;
-S.log.slice().reverse().forEach(e=>h+=`<tr><td>${esc(e.date.split("-").reverse().join("/"))}</td><td>${esc(D[e.d]?D[e.d].n:e.d)}</td><td>${esc(e.src||"avulso")}</td><td>${e.a}/${e.q} (${pct(e.a,e.q)}%)</td><td><button class="btn" data-x="${e.id}">✕</button></td></tr>`);
-h+=`</table></div><div class="card" style="margin-top:12px"><h2 style="margin-top:0">Backup</h2><p style="font-size:13px;color:var(--mut)">Backup manual em JSON caso queira exportar ou restaurar.</p><textarea id="bk" rows="3">${esc(JSON.stringify(S))}</textarea><p><button class="btn" id="br">Restaurar backup</button></p></div>`;
-$("#c").innerHTML=h;
-$("#rb").onclick=()=>{const q=+$("#rq").value||0,a=Math.min(+$("#ra").value||0,q);if(!q)return;S.log.push({id:Date.now(),date:$("#rd").value||iso(new Date()),d:$("#rs").value,q,a,src:"avulso"});save();render();$("#c").classList.remove("hide")};
-$("#sb").onclick=()=>{const n=$("#sn").value;document.querySelectorAll(".sa").forEach(i=>{if(i.value!==""){const k=i.dataset.k;S.log=S.log.filter(x=>!(x.src=="simulado "+n&&x.d==k));S.log.push({id:Date.now()+Math.random(),date:iso(new Date()),d:k,q:D[k].q,a:Math.min(+i.value,D[k].q),src:"simulado "+n})}});save();render()};
-document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{S.log=S.log.filter(x=>String(x.id)!==b.dataset.x);save();render()});
-$("#br").onclick=()=>{try{const o=JSON.parse($("#bk").value);if(o&&Array.isArray(o.log)){S=Object.assign({start:"",done:{},log:[]},o);save();render()}}catch(e){alert("Backup inválido")}}}
-
-// Manifest PWA leve em memória
-(function setupPWA(){
-  const iconSvg = encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="#6cbf4a"/><circle cx="64" cy="66" r="34" fill="#ff9a3c"/><path d="M64 20c10 0 16 6 16 12-6 2-12 1-16-4-4 5-10 6-16 4 0-6 6-12 16-12z" fill="#e5f5d8"/></svg>`);
-  const lnk=document.createElement("link");
-  lnk.rel="icon";
-  lnk.href="data:image/svg+xml,"+iconSvg;
-  document.head.appendChild(lnk);
-  const manifest={
-    name:"Cronograma Banestes 2026",
-    short_name:"Banestes 2026",
-    start_url:".",
-    display:"standalone",
-    background_color:"#f4fbee",
-    theme_color:"#6cbf4a",
-    icons:[{src:"data:image/svg+xml,"+iconSvg,sizes:"128x128",type:"image/svg+xml",purpose:"any"}]
-  };
-  const mLink=document.createElement("link");
-  mLink.rel="manifest";
-  mLink.href="data:application/manifest+json,"+encodeURIComponent(JSON.stringify(manifest));
-  document.head.appendChild(mLink);
-})();
-
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["a","b","c"].forEach(t=>$("#"+t).classList.toggle("hide",t!==b.dataset.t))});
-$("#st").onchange=e=>{S.start=e.target.value;save();render()};
-$("#spull").onclick=()=>pullCloud();
-$("#ov").onclick=e=>{if(e.target.id=="ov")$("#ov").classList.remove("on")};
-
-$("#btnLogin").onclick=async()=>{
-  const email=$("#aemail").value.trim(),pass=$("#apass").value;
-  if(!email||!pass){showAuthMsg("Preencha e-mail e senha.",true);return}
-  try{
-    showAuthMsg("Entrando...",false);
-    await authLogin(email,pass);
-    loadLocal();showView(true);render();await pullCloud();
-  }catch(e){showAuthMsg(e.message,true)}
-};
-
-$("#btnSignup").onclick=async()=>{
-  const email=$("#aemail").value.trim(),pass=$("#apass").value;
-  if(!email||pass.length<6){showAuthMsg("Informe um e-mail válido e senha com at least 6 caracteres.",true);return}
-  try{
-    showAuthMsg("Criando conta...",false);
-    const res=await authSignup(email,pass);
-    if(res.logged){
-      loadLocal();showView(true);render();await pullCloud();
-    }else{
-      showAuthMsg("Conta criada! Verifique seu e-mail para confirmar o cadastro e depois clique em Entrar.",false);
-    }
-  }catch(e){showAuthMsg(e.message,true)}
-};
-
-$("#btnLogout").onclick=()=>{clearSession();showView(false)};
-
-// Inicialização
-(async function init(){
-  const left=Math.ceil((EXAM-new Date(new Date().toDateString()))/864e5);
-  $("#cd").textContent=left;
-  try{
-    const saved=localStorage.getItem("cb26_auth");
-    if(saved)AUTH=JSON.parse(saved);
-  }catch(e){}
-  if(AUTH&&AUTH.access_token){
-    loadLocal();
-    showView(true);
-    render();
-    await pullCloud();
-  }else{
-    showView(false);
-  }
-})();
-</script></body></html>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
