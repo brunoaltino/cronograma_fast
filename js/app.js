@@ -3,7 +3,7 @@ import {
   getAuth, loadSavedSession, clearSession,
   authLogin, authSignup,
   fetchUserState, upsertUserState,
-  upsertRanking, fetchRankingList
+  uploadAvatarBlob, upsertRanking, fetchRankingList
 } from "./supabase.js";
 
 const P = buildPlan();
@@ -13,14 +13,14 @@ let S = {
   start: "",
   done: {},
   log: [],
-  errors: [], // { id, date, d, topic, reason, note, reviewedCount, lastReviewed }
-  sim: null,  // { LP: 8, MT: 7, ... } para o simulador
-  rank: { alias: "", active: true }
+  errors: [],
+  sim: null,
+  rank: { alias: "", avatarUrl: "", active: true }
 };
 
 let rankingCache = [];
-let rankSort = "nota"; // "nota" | "questoes" | "dias" | "acerto"
-let errFilter = "all"; // "all" | "pending" | codigo disciplina
+let rankSort = "nota";
+let errFilter = "all";
 
 const $ = s => document.querySelector(s);
 const pad = n => String(n).padStart(2, "0");
@@ -31,6 +31,47 @@ const pct = (a, q) => q ? Math.round((100 * a) / q) : 0;
 const cls = p => (p >= 75 ? "good" : p >= 60 ? "mid" : "low");
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function initials(name) {
+  const parts = String(name || "U").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "U";
+  return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function renderAvatarHtml(url, name, sizeClass = "") {
+  const safeName = esc(name || "Usuário");
+  if (url) {
+    return `<img class="av ${sizeClass}" src="${esc(url)}" alt="${safeName}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';"><span class="av ${sizeClass}" style="display:none">${esc(initials(name))}</span>`;
+  }
+  return `<span class="av ${sizeClass}">${esc(initials(name))}</span>`;
+}
+
+function compressImageFile(file, maxSize = 256, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Arquivo de imagem inválido."));
+      img.onload = () => {
+        const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        const w = Math.max(1, Math.round(img.width * ratio));
+        const h = Math.max(1, Math.round(img.height * ratio));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          if (!blob) reject(new Error("Falha ao processar imagem."));
+          else resolve({ blob, mimeType: "image/jpeg" });
+        }, "image/jpeg", quality);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 function setStatus(state, msg) {
@@ -74,14 +115,17 @@ function normalizeState(raw) {
     log: [],
     errors: [],
     sim: null,
-    rank: { alias: defaultAlias(), active: true }
+    rank: { alias: defaultAlias(), avatarUrl: "", active: true }
   };
   const merged = Object.assign(base, raw || {});
   if (!Array.isArray(merged.log)) merged.log = [];
   if (!Array.isArray(merged.errors)) merged.errors = [];
   if (!merged.done || typeof merged.done !== "object") merged.done = {};
-  if (!merged.rank || typeof merged.rank !== "object") merged.rank = { alias: defaultAlias(), active: true };
+  if (!merged.rank || typeof merged.rank !== "object") {
+    merged.rank = { alias: defaultAlias(), avatarUrl: "", active: true };
+  }
   if (!merged.rank.alias) merged.rank.alias = defaultAlias();
+  if (typeof merged.rank.avatarUrl !== "string") merged.rank.avatarUrl = "";
   return merged;
 }
 
@@ -139,6 +183,7 @@ async function syncRankingNow() {
   const sum = computeSummary();
   await upsertRanking({
     apelido: (S.rank.alias || defaultAlias()).trim().slice(0, 30),
+    avatar_url: S.rank.avatarUrl || null,
     ativo: Boolean(S.rank.active),
     ...sum
   });
@@ -363,7 +408,7 @@ function renderSim() {
   Object.keys(D).forEach(k => {
     const val = S.sim[k] ?? 0;
     const p = pct(val, D[k].q);
-    const pesoQ = D[k].g ? (10 / 90) : (20 / 120); // pontos na NF por acerto
+    const pesoQ = D[k].g ? (10 / 90) : (20 / 120);
     h += `<tr>
       <td><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${D[k].c}"></i> ${esc(D[k].n)}</td>
       <td>${D[k].g ? "Gerais (p.1)" : "Específicos (p.2)"}</td>
@@ -625,7 +670,7 @@ function renderC() {
   };
 }
 
-// === ABA F: RANKING DOS AMIGOS ===
+// === ABA F: RANKING DOS AMIGOS & EDITAR PERFIL ===
 async function refreshRanking() {
   try {
     await syncRankingNow();
@@ -639,6 +684,7 @@ async function refreshRanking() {
 function renderRanking() {
   const auth = getAuth();
   const myId = auth?.user?.id;
+  const currentAlias = S.rank.alias || defaultAlias();
   const list = rankingCache.filter(r => r.ativo || r.user_id === myId).slice();
 
   list.sort((a, b) => {
@@ -649,17 +695,31 @@ function renderRanking() {
   });
 
   let h = `<div class="card">
-    <div class="row" style="align-items:end">
-      <div>
-        <label for="ralias">Seu apelido no ranking</label>
-        <input type="text" id="ralias" maxlength="30" value="${esc(S.rank.alias || defaultAlias())}">
+    <h2 style="margin-top:0">Editar perfil do ranking</h2>
+    <div class="prof-box">
+      <div class="av-wrap">
+        <div id="avPreview">${renderAvatarHtml(S.rank.avatarUrl, currentAlias)}</div>
+        <div>
+          <label for="ravfile" style="margin-top:0">Foto de perfil (JPG, PNG ou WEBP)</label>
+          <input type="file" id="ravfile" accept="image/jpeg,image/png,image/webp">
+          <div style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            ${S.rank.avatarUrl ? `<button type="button" class="btn sm danger" id="ravremove">Remover foto</button>` : ""}
+            <span class="mut" id="ravstatus"></span>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
-        <input type="checkbox" id="ractive" ${S.rank.active ? "checked" : ""}>
-        <label for="ractive" style="margin:0;cursor:pointer">Participar do ranking dos amigos</label>
+
+      <div style="flex:1;min-width:220px">
+        <label for="ralias" style="margin-top:0">Apelido no ranking</label>
+        <input type="text" id="ralias" maxlength="30" value="${esc(currentAlias)}">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+          <input type="checkbox" id="ractive" ${S.rank.active ? "checked" : ""}>
+          <label for="ractive" style="margin:0;cursor:pointer">Participar do ranking dos amigos</label>
+        </div>
       </div>
-      <div style="flex:0 0 auto;display:flex;gap:8px">
-        <button class="btn p sm" id="rsave">Atualizar placar</button>
+
+      <div style="flex:0 0 auto">
+        <button class="btn p" id="rsave">Salvar perfil</button>
       </div>
     </div>
   </div>
@@ -679,7 +739,7 @@ function renderRanking() {
   <div class="card table-wrap" style="margin-top:8px">`;
 
   if (!list.length) {
-    h += `<p class="mut" style="margin:0">Nenhum participante no placar ainda. Clique em "Atualizar placar" para aparecer aqui.</p>`;
+    h += `<p class="mut" style="margin:0">Nenhum participante no placar ainda. Clique em "Salvar perfil" para aparecer aqui.</p>`;
   } else {
     h += `<table>
       <tr><th>#</th><th>Participante</th><th>Nota Est.</th><th>Questões</th><th>Acerto</th><th>Dias</th><th>Atualizado</th></tr>`;
@@ -687,9 +747,15 @@ function renderRanking() {
       const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}º`;
       const isMe = r.user_id === myId;
       const dt = r.atualizado_em ? new Date(r.atualizado_em).toLocaleDateString("pt-BR") : "--";
+      const displayName = r.apelido || "Concurseiro";
       h += `<tr class="${isMe ? "rank-me" : ""}">
         <td><b>${medal}</b></td>
-        <td>${esc(r.apelido)}${isMe ? " <span class='badge'>você</span>" : ""}${!r.ativo ? " <span class='badge warn'>oculto</span>" : ""}</td>
+        <td>
+          <div class="user-cell">
+            ${renderAvatarHtml(r.avatar_url, displayName, "sm")}
+            <span>${esc(displayName)}${isMe ? " <span class='badge'>você</span>" : ""}${!r.ativo ? " <span class='badge warn'>oculto</span>" : ""}</span>
+          </div>
+        </td>
         <td class="${Number(r.nota_estimada) >= 6 ? "good" : "low"}"><b>${Number(r.nota_estimada).toFixed(2).replace(".", ",")}</b></td>
         <td>${r.questoes_feitas}</td>
         <td>${Number(r.acerto_geral).toFixed(1).replace(".", ",")}%</td>
@@ -701,6 +767,36 @@ function renderRanking() {
   }
   h += `</div>`;
   $("#f").innerHTML = h;
+
+  $("#ravfile").onchange = async ev => {
+    const file = ev.target.files?.[0];
+    if (!file) return;
+    if (file.size > 4 * 1024 * 1024) {
+      $("#ravstatus").textContent = "Escolha uma imagem de até 4 MB.";
+      return;
+    }
+    try {
+      $("#ravstatus").textContent = "Enviando foto...";
+      const { blob, mimeType } = await compressImageFile(file, 256, 0.82);
+      const url = await uploadAvatarBlob(blob, mimeType);
+      S.rank.avatarUrl = url;
+      S.rank.alias = ($("#ralias").value || "").trim() || defaultAlias();
+      save();
+      await refreshRanking();
+      $("#ravstatus").textContent = "Foto atualizada!";
+    } catch (err) {
+      $("#ravstatus").textContent = err.message || "Erro ao enviar foto.";
+    }
+  };
+
+  const rmBtn = $("#ravremove");
+  if (rmBtn) {
+    rmBtn.onclick = async () => {
+      S.rank.avatarUrl = "";
+      save();
+      await refreshRanking();
+    };
+  }
 
   $("#rsave").onclick = async () => {
     S.rank.alias = ($("#ralias").value || "").trim() || defaultAlias();
