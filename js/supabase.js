@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE_ESTADO, TABLE_RANKING } from "./config.js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE_ESTADO, TABLE_RANKING, AVATAR_BUCKET } from "./config.js";
 
 let AUTH = null;
 
@@ -119,6 +119,30 @@ export async function upsertUserState(estado) {
   if (!res.ok) throw new Error("HTTP " + res.status);
 }
 
+export async function uploadAvatarBlob(blob, mimeType = "image/jpeg") {
+  const token = await ensureToken();
+  if (!token || !AUTH || !AUTH.user) throw new Error("UNAUTH");
+  const ext = mimeType.includes("png") ? "png" : mimeType.includes("webp") ? "webp" : "jpg";
+  const path = `${AUTH.user.id}/avatar.${ext}`;
+  const url = `${SUPABASE_URL}/storage/v1/object/${AVATAR_BUCKET}/${path}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + token,
+      "Content-Type": mimeType,
+      "x-upsert": "true"
+    },
+    body: blob
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(errText || "Falha no upload da foto");
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/${AVATAR_BUCKET}/${path}?v=${Date.now()}`;
+}
+
 export async function upsertRanking(metrics) {
   const token = await ensureToken();
   if (!token || !AUTH || !AUTH.user) return;
@@ -134,6 +158,7 @@ export async function upsertRanking(metrics) {
     body: JSON.stringify({
       user_id: AUTH.user.id,
       apelido: metrics.apelido,
+      avatar_url: metrics.avatar_url || null,
       ativo: metrics.ativo,
       dias_concluidos: metrics.dias_concluidos,
       questoes_feitas: metrics.questoes_feitas,
@@ -148,7 +173,7 @@ export async function upsertRanking(metrics) {
 export async function fetchRankingList() {
   const token = await ensureToken();
   if (!token) throw new Error("UNAUTH");
-  const url = `${SUPABASE_URL}/rest/v1/${TABLE_RANKING}?select=user_id,apelido,ativo,dias_concluidos,questoes_feitas,acerto_geral,nota_estimada,atualizado_em&order=nota_estimada.desc,questoes_feitas.desc,dias_concluidos.desc`;
+  const url = `${SUPABASE_URL}/rest/v1/${TABLE_RANKING}?select=user_id,apelido,avatar_url,ativo,dias_concluidos,questoes_feitas,acerto_geral,nota_estimada,atualizado_em&order=nota_estimada.desc,questoes_feitas.desc,dias_concluidos.desc`;
   const res = await fetch(url, {
     headers: { "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + token }
   });
