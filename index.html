@@ -15,7 +15,6 @@ h1{margin:0;font-size:24px}h2{font-size:18px;margin:18px 0 8px}
 .hd input{border:0;border-radius:8px;padding:6px 8px;font:inherit;color:#1d3318;background:#fff}
 .syncbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;font-size:13px}
 .syncbar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.syncbar input{width:auto;min-width:170px;padding:5px 8px;font-size:13px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#999;margin-right:5px}
 .dot.ok{background:#2e8b1f}.dot.sync{background:#ff9a3c}.dot.err{background:#ef6a3a}
 .tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
@@ -40,24 +39,46 @@ input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border
 .row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:110px}
 .sim{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
 .good{color:#2e8b1f}.mid{color:#d9730d}.low{color:var(--bad)}.hide{display:none}
+.authbox{max-width:420px;margin:24px auto}
+.msg{font-size:13px;margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--g2)}
+.msg.err{background:#fde6de;color:#9f2d14}
 </style></head><body><div class="w">
 <div class="hd"><div><h1>🍊 Cronograma Banestes 2026</h1><small>Técnico Bancário, prova em 24/01/2027 (FCC)</small></div>
 <div><div class="cd" id="cd">--</div><small>dias para a prova</small></div>
 <div><small>Início do plano</small><br><input type="date" id="st"></div></div>
 
-<div class="syncbar">
-  <div class="grp"><span class="dot" id="sdot"></span><span id="stxt">Modo local</span></div>
-  <div class="grp">
-    <label for="sid" style="margin:0">Código de sync:</label>
-    <input type="text" id="sid" placeholder="ex.: banestes-bruno-2026">
-    <button class="btn sm" id="spull">Sincronizar agora</button>
+<!-- TELA DE LOGIN / CADASTRO -->
+<div id="authView" class="authbox card hide">
+  <h2 style="margin-top:0">🔐 Acesso privado ao cronograma</h2>
+  <p style="font-size:13px;color:var(--mut);margin-top:0">Entre com sua conta para sincronizar seus dados com segurança.</p>
+  <label for="aemail">E-mail</label>
+  <input type="email" id="aemail" placeholder="seu@email.com" autocomplete="email">
+  <label for="apass">Senha</label>
+  <input type="password" id="apass" placeholder="Mínimo 6 caracteres" autocomplete="current-password">
+  <div class="row" style="margin-top:14px">
+    <button class="btn p" id="btnLogin">Entrar</button>
+    <button class="btn" id="btnSignup">Criar conta</button>
   </div>
+  <div id="amsg" class="msg hide"></div>
 </div>
 
-<div class="tabs"><button data-t="a" class="on">📅 Cronograma</button><button data-t="b">📊 Desempenho</button><button data-t="c">📝 Registro</button></div>
-<div id="a"></div><div id="b" class="hide"></div><div id="c" class="hide"></div>
+<!-- APP PRINCIPAL -->
+<div id="appView" class="hide">
+  <div class="syncbar">
+    <div class="grp"><span class="dot" id="sdot"></span><span id="stxt">Conectando...</span></div>
+    <div class="grp">
+      <span id="uemail" style="color:var(--mut)"></span>
+      <button class="btn sm" id="spull">Sincronizar</button>
+      <button class="btn sm" id="btnLogout">Sair</button>
+    </div>
+  </div>
+
+  <div class="tabs"><button data-t="a" class="on">📅 Cronograma</button><button data-t="b">📊 Desempenho</button><button data-t="c">📝 Registro</button></div>
+  <div id="a"></div><div id="b" class="hide"></div><div id="c" class="hide"></div>
+</div>
 </div>
 <div class="ov" id="ov"><div class="md" id="md"></div></div>
+
 <script>
 // === CONFIGURAÇÃO DO SUPABASE ===
 const SUPABASE_URL = "https://bitkrlqmenyjhsjqjktr.supabase.co/rest/v1/";
@@ -85,7 +106,9 @@ for(let s=1;s<=4;s++){out.push({s:s,t:"Simulado "+s+": resolver em 4h, sem consu
 out.push({r:1,t:"Revisão dos pontos mais fracos (veja o ranking em Desempenho)"},{r:1,t:"Revisão: refazer questões erradas e resumos"},{r:1,t:"Revisão: Guia de Conduta, fórmulas e legislação"},{r:2,t:"Véspera: revisão leve, descanso e documentos da prova"});return out}
 
 const P=plan();
-let S={start:"",done:{},log:[],syncId:""};
+let S={start:"",done:{},log:[]};
+let AUTH=null; // { access_token, refresh_token, expires_at, user: { id, email } }
+
 const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0");
 const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const addD=(s,n)=>{const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return d};
@@ -101,67 +124,145 @@ function setStatus(state,msg){
   txt.textContent=msg;
 }
 
-function cloudConfigured(){
-  return SUPABASE_URL && !SUPABASE_URL.includes("https://bitkrlqmenyjhsjqjktr.supabase.co/rest/v1/") && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("sb_publishable_iIRQFLPKftWcXsJ_8ba5Qw_ToQELnmI");
+function showAuthMsg(text,isErr){
+  const el=$("#amsg");
+  el.textContent=text;
+  el.className="msg"+(isErr?" err":"");
+  el.classList.remove("hide");
 }
 
-function getSyncId(){
-  let id=(S.syncId||localStorage.getItem("cb26_sync_id")||"").trim();
-  if(!id){
-    id="banestes-"+Math.random().toString(36).slice(2,8);
-    S.syncId=id;
-    localStorage.setItem("cb26_sync_id",id);
+function saveSession(data){
+  if(!data||!data.access_token)return;
+  AUTH={
+    access_token:data.access_token,
+    refresh_token:data.refresh_token,
+    expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)-60,
+    user:data.user||(AUTH&&AUTH.user)||null
+  };
+  localStorage.setItem("cb26_auth",JSON.stringify(AUTH));
+}
+
+function clearSession(){
+  AUTH=null;
+  localStorage.removeItem("cb26_auth");
+}
+
+async function ensureToken(){
+  if(!AUTH)return null;
+  const now=Math.floor(Date.now()/1000);
+  if(AUTH.expires_at && now < AUTH.expires_at)return AUTH.access_token;
+  if(!AUTH.refresh_token){clearSession();return null}
+  try{
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{
+      method:"POST",
+      headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
+      body:JSON.stringify({refresh_token:AUTH.refresh_token})
+    });
+    if(!res.ok){clearSession();return null}
+    const data=await res.json();
+    saveSession(data);
+    return AUTH.access_token;
+  }catch(e){
+    return AUTH.access_token; // tenta com o atual se estiver offline
   }
-  return id;
+}
+
+async function authLogin(email,password){
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{
+    method:"POST",
+    headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
+    body:JSON.stringify({email,password})
+  });
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error_description||data.msg||"Falha ao entrar");
+  saveSession(data);
+}
+
+async function authSignup(email,password){
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{
+    method:"POST",
+    headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
+    body:JSON.stringify({email,password})
+  });
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error_description||data.msg||"Falha ao criar conta");
+  if(data.access_token){
+    saveSession(data);
+    return {logged:true};
+  }
+  return {logged:false};
+}
+
+function showView(logged){
+  $("#authView").classList.toggle("hide",logged);
+  $("#appView").classList.toggle("hide",!logged);
+  if(logged && AUTH && AUTH.user){
+    $("#uemail").textContent=AUTH.user.email||"";
+  }
+}
+
+function cacheKey(){
+  return "cb26_"+(AUTH&&AUTH.user?AUTH.user.id:"local");
+}
+
+function loadLocal(){
+  try{
+    const l=localStorage.getItem(cacheKey())||localStorage.getItem("cb26");
+    if(l)S=Object.assign({start:"",done:{},log:[]},JSON.parse(l));
+  }catch(e){}
 }
 
 async function pullCloud(){
-  if(!cloudConfigured()){setStatus("","Local (configure Supabase no código)");return}
-  const id=getSyncId();
-  setStatus("sync","Sincronizando com a nuvem...");
+  const token=await ensureToken();
+  if(!token||!AUTH||!AUTH.user){showView(false);return}
+  setStatus("sync","Sincronizando...");
   try{
-    const url=`${SUPABASE_URL}/rest/v1/${TABLE}?user_id=eq.${encodeURIComponent(id)}&select=estado,atualizado_em`;
+    const url=`${SUPABASE_URL}/rest/v1/${TABLE}?user_id=eq.${encodeURIComponent(AUTH.user.id)}&select=estado,atualizado_em`;
     const res=await fetch(url,{
       headers:{
         "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+SUPABASE_ANON_KEY
+        "Authorization":"Bearer "+token
       }
     });
+    if(res.status===401){clearSession();showView(false);return}
     if(!res.ok)throw new Error("HTTP "+res.status);
     const rows=await res.json();
     if(Array.isArray(rows)&&rows.length&&rows[0].estado){
-      S=Object.assign({start:"",done:{},log:[],syncId:id},rows[0].estado,{syncId:id});
-      localStorage.setItem("cb26",JSON.stringify(S));
+      S=Object.assign({start:"",done:{},log:[]},rows[0].estado);
+      localStorage.setItem(cacheKey(),JSON.stringify(S));
       render();
+    }else if(Object.keys(S.done).length||S.log.length||S.start){
+      // Se já tinha dados locais antes do primeiro login, sobe para a nuvem
+      await pushCloud();
     }
-    setStatus("ok","Sincronizado ("+id+")");
+    setStatus("ok","Sincronizado na nuvem");
   }catch(e){
-    setStatus("err","Sem nuvem — usando cache local");
+    setStatus("err","Offline — usando cache local");
   }
 }
 
 async function pushCloud(){
-  if(!cloudConfigured())return;
-  const id=getSyncId();
-  setStatus("sync","Salvando na nuvem...");
+  const token=await ensureToken();
+  if(!token||!AUTH||!AUTH.user)return;
+  setStatus("sync","Salvando...");
   try{
     const url=`${SUPABASE_URL}/rest/v1/${TABLE}?on_conflict=user_id`;
     const res=await fetch(url,{
       method:"POST",
       headers:{
         "apikey":SUPABASE_ANON_KEY,
-        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+token,
         "Content-Type":"application/json",
         "Prefer":"resolution=merge-duplicates,return=minimal"
       },
       body:JSON.stringify({
-        user_id:id,
+        user_id:AUTH.user.id,
         estado:S,
         atualizado_em:new Date().toISOString()
       })
     });
     if(!res.ok)throw new Error("HTTP "+res.status);
-    setStatus("ok","Salvo na nuvem ("+id+")");
+    setStatus("ok","Salvo na nuvem");
   }catch(e){
     setStatus("err","Erro ao salvar na nuvem (salvo local)");
   }
@@ -169,24 +270,15 @@ async function pushCloud(){
 
 let tm;
 function save(){
-  try{localStorage.setItem("cb26",JSON.stringify(S));if(S.syncId)localStorage.setItem("cb26_sync_id",S.syncId)}catch(e){}
+  try{localStorage.setItem(cacheKey(),JSON.stringify(S))}catch(e){}
   clearTimeout(tm);
   tm=setTimeout(pushCloud,500);
-}
-
-function loadLocal(){
-  try{
-    const l=localStorage.getItem("cb26");
-    if(l)S=Object.assign({start:"",done:{},log:[],syncId:""},JSON.parse(l));
-  }catch(e){}
-  getSyncId();
 }
 
 function stats(){const R={};Object.keys(D).forEach(k=>R[k]={q:0,a:0});S.log.forEach(e=>{if(R[e.d]){R[e.d].q+=e.q;R[e.d].a+=e.a}});return R}
 function render(){
   const st=S.start||iso(new Date());
   $("#st").value=st;
-  $("#sid").value=getSyncId();
   const left=Math.ceil((EXAM-new Date(new Date().toDateString()))/864e5);
   $("#cd").textContent=left;
   renderA(st);renderB();renderC();
@@ -222,12 +314,12 @@ function renderC(){let h=`<div class="card"><h2 style="margin-top:0">Registrar q
 <div class="card" style="margin-top:12px"><h2 style="margin-top:0">Lançar simulado</h2><label>Qual simulado</label><select id="sn"><option>1</option><option>2</option><option>3</option><option>4</option></select><div class="sim">${Object.keys(D).map(k=>`<div><label>${esc(D[k].n)} (de ${D[k].q})</label><input type="number" min="0" max="${D[k].q}" data-k="${k}" class="sa"></div>`).join("")}</div><p><button class="btn o" id="sb">Lançar simulado</button></p></div>
 <h2>Histórico</h2><div class="card"><table><tr><th>Data</th><th>Disciplina</th><th>Origem</th><th>Acertos</th><th></th></tr>`;
 S.log.slice().reverse().forEach(e=>h+=`<tr><td>${esc(e.date.split("-").reverse().join("/"))}</td><td>${esc(D[e.d]?D[e.d].n:e.d)}</td><td>${esc(e.src||"avulso")}</td><td>${e.a}/${e.q} (${pct(e.a,e.q)}%)</td><td><button class="btn" data-x="${e.id}">✕</button></td></tr>`);
-h+=`</table></div><div class="card" style="margin-top:12px"><h2 style="margin-top:0">Backup</h2><p style="font-size:13px;color:var(--mut)">Seus dados ficam salvos no cache local e sincronizados na nuvem. Você também pode copiar o JSON abaixo ou restaurar manualmente.</p><textarea id="bk" rows="3">${esc(JSON.stringify(S))}</textarea><p><button class="btn" id="br">Restaurar backup</button></p></div>`;
+h+=`</table></div><div class="card" style="margin-top:12px"><h2 style="margin-top:0">Backup</h2><p style="font-size:13px;color:var(--mut)">Backup manual em JSON caso queira exportar ou restaurar.</p><textarea id="bk" rows="3">${esc(JSON.stringify(S))}</textarea><p><button class="btn" id="br">Restaurar backup</button></p></div>`;
 $("#c").innerHTML=h;
 $("#rb").onclick=()=>{const q=+$("#rq").value||0,a=Math.min(+$("#ra").value||0,q);if(!q)return;S.log.push({id:Date.now(),date:$("#rd").value||iso(new Date()),d:$("#rs").value,q,a,src:"avulso"});save();render();$("#c").classList.remove("hide")};
 $("#sb").onclick=()=>{const n=$("#sn").value;document.querySelectorAll(".sa").forEach(i=>{if(i.value!==""){const k=i.dataset.k;S.log=S.log.filter(x=>!(x.src=="simulado "+n&&x.d==k));S.log.push({id:Date.now()+Math.random(),date:iso(new Date()),d:k,q:D[k].q,a:Math.min(+i.value,D[k].q),src:"simulado "+n})}});save();render()};
 document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{S.log=S.log.filter(x=>String(x.id)!==b.dataset.x);save();render()});
-$("#br").onclick=()=>{try{const o=JSON.parse($("#bk").value);if(o&&Array.isArray(o.log)){S=Object.assign({start:"",done:{},log:[],syncId:getSyncId()},o);save();render()}}catch(e){alert("Backup inválido")}}}
+$("#br").onclick=()=>{try{const o=JSON.parse($("#bk").value);if(o&&Array.isArray(o.log)){S=Object.assign({start:"",done:{},log:[]},o);save();render()}}catch(e){alert("Backup inválido")}}}
 
 // Manifest PWA leve em memória
 (function setupPWA(){
@@ -253,11 +345,50 @@ $("#br").onclick=()=>{try{const o=JSON.parse($("#bk").value);if(o&&Array.isArray
 
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["a","b","c"].forEach(t=>$("#"+t).classList.toggle("hide",t!==b.dataset.t))});
 $("#st").onchange=e=>{S.start=e.target.value;save();render()};
-$("#sid").onchange=e=>{S.syncId=(e.target.value||"").trim()||getSyncId();localStorage.setItem("cb26_sync_id",S.syncId);pullCloud()};
 $("#spull").onclick=()=>pullCloud();
 $("#ov").onclick=e=>{if(e.target.id=="ov")$("#ov").classList.remove("on")};
 
-loadLocal();
-render();
-pullCloud();
+$("#btnLogin").onclick=async()=>{
+  const email=$("#aemail").value.trim(),pass=$("#apass").value;
+  if(!email||!pass){showAuthMsg("Preencha e-mail e senha.",true);return}
+  try{
+    showAuthMsg("Entrando...",false);
+    await authLogin(email,pass);
+    loadLocal();showView(true);render();await pullCloud();
+  }catch(e){showAuthMsg(e.message,true)}
+};
+
+$("#btnSignup").onclick=async()=>{
+  const email=$("#aemail").value.trim(),pass=$("#apass").value;
+  if(!email||pass.length<6){showAuthMsg("Informe um e-mail válido e senha com at least 6 caracteres.",true);return}
+  try{
+    showAuthMsg("Criando conta...",false);
+    const res=await authSignup(email,pass);
+    if(res.logged){
+      loadLocal();showView(true);render();await pullCloud();
+    }else{
+      showAuthMsg("Conta criada! Verifique seu e-mail para confirmar o cadastro e depois clique em Entrar.",false);
+    }
+  }catch(e){showAuthMsg(e.message,true)}
+};
+
+$("#btnLogout").onclick=()=>{clearSession();showView(false)};
+
+// Inicialização
+(async function init(){
+  const left=Math.ceil((EXAM-new Date(new Date().toDateString()))/864e5);
+  $("#cd").textContent=left;
+  try{
+    const saved=localStorage.getItem("cb26_auth");
+    if(saved)AUTH=JSON.parse(saved);
+  }catch(e){}
+  if(AUTH&&AUTH.access_token){
+    loadLocal();
+    showView(true);
+    render();
+    await pullCloud();
+  }else{
+    showView(false);
+  }
+})();
 </script></body></html>
